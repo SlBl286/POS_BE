@@ -1,0 +1,84 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Item {
+  id             Int        @id @default(autoincrement())
+  createdAt      DateTime   @default(now())
+  updatedAt      DateTime   @updatedAt
+  name           String
+  categories     Category[]
+  unit           Unit       @relation(fields: [unitId], references: [id])
+  unitId         Int
+  barcode        String[]
+  price          Decimal
+  cost           Int
+  wholeSalePrice Int
+  imagePath      String
+  avatarPath     String
+  stock          Int
+  billItem       BillItem[]
+}
+
+model Category {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  items     Item[]
+}
+
+model Unit {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  Item      Item[]
+}
+
+model Customer {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  phone     String
+  address   String
+  Bill      Bill[]
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name      String
+  Bill      Bill[]
+}
+
+model Bill {
+  id         Int        @id @default(autoincrement())
+  createdAt  DateTime   @default(now())
+  updatedAt  DateTime   @updatedAt
+  customer   Customer   @relation(fields: [customerId], references: [id])
+  customerId Int
+  user       User       @relation(fields: [userId], references: [id])
+  billItem   BillItem[]
+  userId     Int
+}
+
+model BillItem {
+  id       Int     @id @default(autoincrement())
+  bill     Bill    @relation(fields: [billId], references: [id])
+  item     Item    @relation(fields: [itemId], references: [id])
+  quantity Int
+  price    Decimal
+  billId   Int
+  itemId   Int
+}
